@@ -1,0 +1,14 @@
+To run relocated-go:
+
+	export GOPATH=`pwd`
+	go run relocated.go
+
+Configuration:
+
+	config.json <-- Just filled the globs/values etc. Also customize your relocate.sh
+
+To generate some example scripts/files:
+
+	./example.sh
+	export GOPATH=`pwd`
+	go run relocated.go

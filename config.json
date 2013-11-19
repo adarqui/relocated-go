@@ -1,0 +1,31 @@
+{
+	"root" : {
+		"MaxProc" : 10,
+		"Interval" : 5,
+		"Relocators" : [
+			{
+				"Name" : "Company1",
+				"NameSpace" : "Company1",
+				"Class" : "Company1_Movies",
+				"Destination" : "/tmp/company1/dest",
+				"Glob" : [
+					"/tmp/company1/movies/*.mov",
+					"/tmp/company1/movies2/*.wmv"
+				],
+				"Relocate" : "/tmp/company1/bin/relocate.sh"
+			},
+			{
+				"Name" : "Company2",
+				"NameSpace" : "Company2",
+				"Class" : "Company2_Assets",
+				"Destination" : "/tmp/company2/out",
+				"Glob" : [
+					"/tmp/company2/new_releases/*.mov",
+					"/tmp/company2/new_releases/*.jpg",
+					"/tmp/company2/new_releases/*/*"
+				],
+				"Relocate" : "/tmp/company2/bin/relocate.sh"
+			}
+		]
+	}
+}
