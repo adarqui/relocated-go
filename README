@@ -5,7 +5,9 @@ To run relocated-go:
 
 Configuration:
 
-	config.json <-- Just filled the globs/values etc. Also customize your relocate.sh
+	config.json <-- Just fill the globs/values etc. Also customize your relocate.sh
+
+		An example relocate.sh can be found in scripts/relocate.sh
 
 To generate some example scripts/files:
 
