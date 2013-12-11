@@ -2,11 +2,10 @@ package main
 
 import (
 	"log"
-	"relocated_inc"
 )
 
 func main() {
-	var conf relocated_inc.JsonType
+	var conf JsonType
 	log.Printf("Initializing relocated-go.")
 	conf.Init()
 }

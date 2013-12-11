@@ -1,4 +1,4 @@
-package relocated_inc
+package main
 
 import (
 	"encoding/json"
