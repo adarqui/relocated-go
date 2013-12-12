@@ -22,6 +22,7 @@ type JsonType struct {
 }
 
 type ObjectType struct {
+	Daemon     bool
 	MaxProc    int
 	Interval   time.Duration
 	Relocators []RelocatorsType
@@ -85,6 +86,10 @@ func (x *JsonType) Init() {
 	exec := make(chan RelocatorsFileType, 32)
 
 	x.Sanitize()
+
+	if x.Root.Daemon == true {
+		Daemon()
+	}
 
 	for _, element := range x.Root.Relocators {
 		element_copy := element

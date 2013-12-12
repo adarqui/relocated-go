@@ -1,5 +1,6 @@
 {
 	"root" : {
+		"Daemon" : true,
 		"MaxProc" : 10,
 		"Interval" : 5,
 		"Relocators" : [
