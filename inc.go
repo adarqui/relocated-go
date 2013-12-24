@@ -24,7 +24,12 @@ type JsonType struct {
 type ObjectType struct {
 	Daemon     bool
 	MaxProc    int
-	Interval   time.Duration
+	/*
+	 * IntervalPoll = seconds to poll, ie, poll every 1 second for changes
+	 * IntervalElapsed = seconds elapsed which trigger a relocation
+	 */
+	IntervalPoll   time.Duration
+	IntervalElapsed   time.Duration
 	Relocators []RelocatorsType
 }
 
@@ -45,22 +50,28 @@ type RelocatorsFileType struct {
 	Relocator RelocatorsType
 	Fi_now    os.FileInfo
 	Fi_prev   os.FileInfo
+	Last      time.Time
 }
 
 func (x *JsonType) Sanitize() {
 	if x.Root.MaxProc <= 0 {
 		x.Root.MaxProc = 10
 	}
-	if x.Root.Interval <= 0 {
-		x.Root.Interval = 60
+	if x.Root.IntervalPoll <= 0 {
+		x.Root.IntervalPoll = 5
 	}
-	x.Root.Interval = x.Root.Interval * time.Second;
+	if x.Root.IntervalElapsed <= 0 {
+		x.Root.IntervalElapsed = 60
+	}
 
-	log.Printf("Global config settings: MaxProc=%i, Interval=%i\n", x.Root.MaxProc, x.Root.Interval)
+	x.Root.IntervalPoll = x.Root.IntervalPoll * time.Second;
+	x.Root.IntervalElapsed = x.Root.IntervalElapsed * time.Second
+
+	log.Printf("Global config settings: MaxProc=%i, IntervalPoll=%i, IntervalElapsed=%i\n", x.Root.MaxProc, x.Root.IntervalPoll, x.Root.IntervalElapsed)
 
 	for key, element := range x.Root.Relocators {
 		if element.Interval <= 0 {
-			element.Interval = x.Root.Interval
+			element.Interval = x.Root.IntervalElapsed
 		} else {
 			element.Interval = element.Interval * time.Second
 		}
@@ -93,7 +104,7 @@ func (x *JsonType) Init() {
 
 	for _, element := range x.Root.Relocators {
 		element_copy := element
-		go Init_Watcher(&element_copy, exec)
+		go Init_Watcher(x.Root.IntervalPoll, &element_copy, exec)
 	}
 
 	for i := 0; i < x.Root.MaxProc; i++ {
@@ -103,12 +114,12 @@ func (x *JsonType) Init() {
 	select {}
 }
 
-func Init_Watcher(x *RelocatorsType, c chan RelocatorsFileType) {
+func Init_Watcher(Poll time.Duration, x *RelocatorsType, c chan RelocatorsFileType) {
 
 	x.Files = map[string]RelocatorsFileType{}
 	for {
 		x.Fill_Glob(c)
-		time.Sleep(x.Interval)
+		time.Sleep(Poll)
 	}
 }
 
@@ -148,6 +159,7 @@ func (x *RelocatorsType) Fill_Glob(c chan RelocatorsFileType) {
 				F.Status = STATUS_INPROGRESS
 				F.Relocator.Clone_Relocator(x)
 				F.Path = element
+				F.Last = time.Now()
 				err = Stat_File(&F)
 				if err != nil {
 					continue
@@ -168,7 +180,8 @@ func (x *RelocatorsType) Fill_Glob(c chan RelocatorsFileType) {
 					continue
 				}
 
-				if F.Fi_now.Size() == F.Fi_prev.Size() {
+				now := time.Now()
+				if F.Fi_now.Size() == F.Fi_prev.Size() && now.Sub(F.Last) > x.Interval  {
 					/* Interval has passed & the current/previous size match. This triggers relocation */
 					F.Status = STATUS_FINISHED
 					x.Files[element] = F
