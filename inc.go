@@ -34,6 +34,7 @@ type ObjectType struct {
 }
 
 type RelocatorsType struct {
+	Active      bool
 	Name        string
 	NameSpace   string
 	Class       string
@@ -104,7 +105,9 @@ func (x *JsonType) Init() {
 
 	for _, element := range x.Root.Relocators {
 		element_copy := element
-		go Init_Watcher(x.Root.IntervalPoll, &element_copy, exec)
+		if element.Active == true {
+			go Init_Watcher(x.Root.IntervalPoll, &element_copy, exec)
+		}
 	}
 
 	for i := 0; i < x.Root.MaxProc; i++ {

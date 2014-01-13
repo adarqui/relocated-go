@@ -15,6 +15,18 @@
 					"/tmp/incoming/*.jpg"
 				],
 				"Relocate" : "/tmp/relocate.sh"
+			},
+			{
+				"Active" : false,
+				"Name" : "Company1",
+				"NameSpace" : "Company1",
+				"Class" : "Company1_Movies",
+				"Destination" : "/tmp/dest",
+				"Glob" : [
+					"/tmp/incoming/*.mov",
+					"/tmp/incoming/*.jpg"
+				],
+				"Relocate" : "/tmp/relocate.sh"
 			}
 		]
 	}
